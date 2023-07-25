@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Index"; // Sayfa başlığı belirleniyor.
+}
+
+<h1>Routing/Index</h1> 
+
+<a asp-controller="Routing" asp-action="Index2" asp-route-userId="1" asp-route-userName="mehmet">index 2'e git</a>
+<!-- "Index2" action'ına yönlendiren bir bağlantı oluşturuluyor.
+     - asp-controller: "Routing" controller'ında aranacak olan action methodu belirtir.
+     - asp-action: "Index2" action methodu adıdır.
+     - asp-route-userId: Bu bir parametre olup, "Index2" action methodu içindeki "int userId" parametresine karşılık gelecektir. Bu örnekte değeri 1 olarak belirlenmiştir.
+     - asp-route-userName: Bu bir parametre olup, "Index2" action methodu içindeki "string userName" parametresine karşılık gelecektir. Bu örnekte değeri "mehmet" olarak belirlenmiştir.
+     Bağlantıya tıklandığında "Index2" action'ına bu parametrelerle birlikte yönlendirilecektir.
+-->
+
+<p>id : @ViewBag.id</p> <!-- ViewBag.id içindeki değeri ekrana yazdırır. -->

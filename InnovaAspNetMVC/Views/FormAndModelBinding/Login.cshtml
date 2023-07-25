@@ -1,0 +1,40 @@
+﻿@{
+	ViewData["Title"] = "Login"; //// Sayfa başlığı belirleniyor.
+
+	var genderList = (ViewBag.genderList as List<GenderViewModel>)!; // ViewBag.genderList içindeki GenderViewModel listesini genderList değişkenine atıyoruz.
+}
+@model LoginViewModel // Bu view'in modeli, LoginViewModel sınıfı olarak tanımlandı.
+<h1>Login</h1> // Başlık ekrana yazdırılıyor.
+
+<form method="post" asp-controller="FormAndModelBinding" asp-action="Login">
+    <!-- Bir form oluşturuluyor. -->
+    
+    <input asp-for="FormData.Email" /> <!-- FormData.Email özelliğine karşılık gelen bir input alanı oluşturuluyor. -->
+    <br />
+    <input asp-for="FormData.Password" /> <!-- FormData.Password özelliğine karşılık gelen bir input alanı oluşturuluyor. -->
+    <br />
+    <input type="checkbox" asp-for="FormData.RememberMe" /> <!-- FormData.RememberMe özelliğine karşılık gelen bir checkbox oluşturuluyor. -->
+    <br />
+    
+    <select asp-for="FormData.Country" asp-items="Model.Data.CountryMenu"></select>
+    <!-- FormData.Country özelliğine karşılık gelen bir select (dropdown) oluşturuluyor ve ülkelerin listesi Model.Data.CountryMenu ile bağlanıyor. -->
+
+    <br />
+    @foreach (var gender in Model.Data.GenderMenu)
+    {
+        <input type="radio" value="@gender.Value" asp-for="FormData.Gender" /> @gender.Text
+        <!-- FormData.Gender özelliğine karşılık gelen bir dizi radio button oluşturuluyor ve seçenekler Model.Data.GenderMenu ile bağlanıyor. -->
+
+    }
+    <br />
+
+    <button type="submit">Save</button> <!-- Bir submit butonu oluşturuluyor. -->
+</form>
+
+<p>Email : @Model.FormData?.Email</p> <!-- 
+Bu satır, Model içindeki FormData adlı bir property'e erişerek, Email adlı özelliğini görüntüler. att sembolü, Razor syntax'ında C# kodu olduğunu belirtir. Model özelliği, bu view'in modeli olan LoginViewModel sınıfını temsil eder.-->
+<p>Password : @Model.FormData?.Password</p>
+<p>Country : @Model.FormData?.Country</p>
+<p>RememberMe : @Model.FormData?.RememberMe</p>
+<p>Gender : @Model.FormData?.Gender</p>
+<!-- Formdan alınan veriler view içinde gösteriliyor. @Model.FormData, LoginViewModel'in FormData özelliğine erişmek için kullanılır. -->

@@ -1,0 +1,63 @@
+﻿@{
+	ViewData["Title"] = "Example";
+
+	var product = ViewData["product2"] as Product;
+	var product2 = ViewBag.product as Product;
+}
+@model (List<Product> product1,List<Product> product2) //product tipinde bir liste oluşturduk.
+
+<a href="/home/example2">example2 git</a>
+
+
+@*@model Tuple<List<Product>,List<Product>>*@
+<p>name : @ViewData["namekey"] </p>
+<p>name : @ViewBag.namekey2</p>
+
+<p> @product?.Name</p>
+<p> @product2?.Name</p>
+
+<table class="table">
+	<thead>
+	<tr>
+		<th>Id</th>
+		<th>Name</th>
+		<th>Price</th>
+	</tr>
+	</thead>
+
+
+	<tbody>
+	@foreach (var item in Model.product1)
+	{
+		<tr>
+			<td>@item.Id</td>
+			<td>@item.Name</td>
+			<td>@item.Price</td>
+		</tr>
+	}
+
+	</tbody>
+</table>
+
+<table class="table">
+	<thead>
+	<tr>
+		<th>ıd</th>
+		<th>name</th>
+		<th>price</th>
+	</tr>
+	</thead>
+
+
+	<tbody>
+	@foreach (var item in (ViewBag.productList as List<Product>)!)
+	{
+		<tr>
+			<td>@item.</td>
+			<td>@item.Name</td>
+			<td>@item.Price</td>
+		</tr>
+	}
+
+	</tbody>
+</table>
