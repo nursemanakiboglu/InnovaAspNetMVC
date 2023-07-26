@@ -1,40 +1,29 @@
 ﻿@{
-	ViewData["Title"] = "Login"; //// Sayfa başlığı belirleniyor.
+    // Sayfa başlığını belirlemek için ViewData kullanılır.
+    ViewData["Title"] = "Login";
 
-	var genderList = (ViewBag.genderList as List<GenderViewModel>)!; // ViewBag.genderList içindeki GenderViewModel listesini genderList değişkenine atıyoruz.
+    // "message" adında bir değişken tanımlanır ve "Merhaba dünya" değeri atanır.
+    var message = "Merhaba dünya";
 }
-@model LoginViewModel // Bu view'in modeli, LoginViewModel sınıfı olarak tanımlandı.
-<h1>Login</h1> // Başlık ekrana yazdırılıyor.
 
-<form method="post" asp-controller="FormAndModelBinding" asp-action="Login">
-    <!-- Bir form oluşturuluyor. -->
-    
-    <input asp-for="FormData.Email" /> <!-- FormData.Email özelliğine karşılık gelen bir input alanı oluşturuluyor. -->
-    <br />
-    <input asp-for="FormData.Password" /> <!-- FormData.Password özelliğine karşılık gelen bir input alanı oluşturuluyor. -->
-    <br />
-    <input type="checkbox" asp-for="FormData.RememberMe" /> <!-- FormData.RememberMe özelliğine karşılık gelen bir checkbox oluşturuluyor. -->
-    <br />
-    
-    <select asp-for="FormData.Country" asp-items="Model.Data.CountryMenu"></select>
-    <!-- FormData.Country özelliğine karşılık gelen bir select (dropdown) oluşturuluyor ve ülkelerin listesi Model.Data.CountryMenu ile bağlanıyor. -->
+@section Scripts
+{
+    <!-- Form doğrulama işlemi için gerekli JavaScript kütüphaneleri eklenir.-->
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}
 
-    <br />
-    @foreach (var gender in Model.Data.GenderMenu)
-    {
-        <input type="radio" value="@gender.Value" asp-for="FormData.Gender" /> @gender.Text
-        <!-- FormData.Gender özelliğine karşılık gelen bir dizi radio button oluşturuluyor ve seçenekler Model.Data.GenderMenu ile bağlanıyor. -->
+@using System.Net
+@model LoginViewModel
 
-    }
-    <br />
+<!-- Ürün listesi için özel tag helper'lar kullanılır -->
+<vc:product-list type="1"></vc:product-list>
+<vc:product-list type="2"></vc:product-list>
 
-    <button type="submit">Save</button> <!-- Bir submit butonu oluşturuluyor. -->
-</form>
+<!-- "_Example_Login.cshtml" adlı kısmi görünüm sayfada kullanılır.
+"message" değişkeni model olarak gönderilir. -->
+<partial name="~/Views/PartialViews/_Example_Login.cshtml" model="message"/>
 
-<p>Email : @Model.FormData?.Email</p> <!-- 
-Bu satır, Model içindeki FormData adlı bir property'e erişerek, Email adlı özelliğini görüntüler. att sembolü, Razor syntax'ında C# kodu olduğunu belirtir. Model özelliği, bu view'in modeli olan LoginViewModel sınıfını temsil eder.-->
-<p>Password : @Model.FormData?.Password</p>
-<p>Country : @Model.FormData?.Country</p>
-<p>RememberMe : @Model.FormData?.RememberMe</p>
-<p>Gender : @Model.FormData?.Gender</p>
-<!-- Formdan alınan veriler view içinde gösteriliyor. @Model.FormData, LoginViewModel'in FormData özelliğine erişmek için kullanılır. -->
+<!-- "_Login_Partial_View.cshtml" adlı kısmi görünüm sayfada kullanılır.
+Model özelliği, sayfanın belirttiği LoginViewModel sınıfı ile doldurulacaktır. -->
+<partial name="_Login_Partial_View" model="Model"/>

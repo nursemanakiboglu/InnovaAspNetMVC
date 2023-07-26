@@ -2,87 +2,100 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace InnovaAspNetMVC.Controllers;
-
-[Route("[controller]/[action]")]
-public class FormAndModelBindingController : Controller
+namespace InnovaAspNetMVC.Controllers
 {
-    [HttpGet]
-    public IActionResult Login()
+    // "FormAndModelBindingController" adında bir Controller sınıfı tanımlanıyor.
+    // Bu Controller, URL'lerde "[controller]" adlı parametreyi kendi adıyla değiştirerek erişilebilir.
+    [Route("[controller]/[action]")]
+    public class FormAndModelBindingController : Controller
     {
-        // 1. CountryMenu'yu oluşturma
-        var countryMenu = new List<CountryMenu>
+        // GET metodu, Login sayfasını oluşturmak için kullanılır.
+        // İlgili view model ve select listeleri oluşturulur ve view'a gönderilir.
+        [HttpGet]
+        public IActionResult Login()
         {
-            new() { Text = "Türkiye", Value = 1 },
-            new() { Text = "Almanya", Value = 2 },
-            new() { Text = "Fransa", Value = 3 }
-        };
-
-
-
-        //var countryMenu2 = new List<SelectListItem>
-        //{
-        //    new() { Text = "Türkiye", Value = "1" },
-        //    new() { Text = "Türkiye", Value = "1" }
-        //};
-        //ViewBag.countryMenu2 = new SelectList(countryMenu2, "Value", "Text", 1);
-
-
-        // 2. GenderViewModel'u oluşturma
-        var genderMenu = new List<GenderViewModel> //genderMenu değişkeni GenderViewModel türündeki nesneleri içeren bir liste olacaktır.
-        {
-            new() { Text = "Erkek", Value = 2 },
-
-            new() { Text = "Kadın", Value = 2 }
-        };
-
-        
-        // 3. LoginViewModel oluşturma ve içine CountryMenu ve GenderMenu'yu atama
-        var loginViewModel = new LoginViewModel
-        {
-            Data =
+            var countryMenu = new List<CountryMenu>
             {
-                CountryMenu = new SelectList(countryMenu, "Value", "Text", 1),
-                GenderMenu = genderMenu
+                new() { Text = "Türkiye", Value = 1 },
+                new() { Text = "Almanya", Value = 2 },
+                new() { Text = "Fransa", Value = 3 }
+            };
+
+            var genderMenu = new List<GenderViewModel>
+            {
+                new() { Text = "Erkek", Value = 2 },
+                new() { Text = "Kadın", Value = 2 }
+            };
+
+            var loginViewModel = new LoginViewModel
+            {
+                Data =
+                {
+                    CountryMenu = new SelectList(countryMenu, "Value", "Text"),
+                    GenderMenu = genderMenu
+                }
+            };
+
+            return View(loginViewModel);
+        }
+
+        // POST metodu, Login sayfasından gönderilen veriyi işlemek için kullanılır.
+        // Gelen veriler doğrulanır ve işleme tabi tutulur.
+        [HttpPost]
+        public IActionResult Login(LoginViewModel request)
+        {
+            var countryMenu = new List<CountryMenu>
+            {
+                new() { Text = "Türkiye", Value = 1 },
+                new() { Text = "Almanya", Value = 2 },
+                new() { Text = "Fransa", Value = 3 }
+            };
+
+            var genderMenu = new List<GenderViewModel>
+            {
+                new() { Text = "Erkek", Value = 1 },
+                new() { Text = "Kadın", Value = 2 }
+            };
+
+            // Form'dan gelen verilerdeki ülke menüsü seçili elemanı atanır.
+            request.Data.CountryMenu = new SelectList(countryMenu, "Value", "Text", 1);
+            request.Data.GenderMenu = genderMenu;
+
+            // ViewBag ile view'a model gönderilir.
+            ViewBag.userViewModel = request;
+
+            // ModelState doğrulaması yapılır.
+            // Eğer modelde hatalar varsa, tekrar Login sayfası gösterilir.
+            if (!ModelState.IsValid)
+                return View(request);
+
+            // Form'dan alınan şifre "12345" içeriyorsa, modelde hata eklenir ve tekrar Login sayfası gösterilir.
+            if (request.FormData.Password.Contains("12345"))
+            {
+                ModelState.AddModelError(string.Empty, "password alanı ardışık sayı içeremez.");
+                return View(request);
             }
-        };
 
+            // Business işlemleri yapılır ve view gösterilir.
+            // Bu örnekte, işlemler yapılmadan tekrar view gösteriliyor.
+            return View(request);
+        }
 
-        // 4. Login view'ına LoginViewModel'i göndererek geri dönmek
-        return View(loginViewModel);
-    }
-
-    [HttpPost]
-    public IActionResult Login(LoginViewModel request)
-    {
-        // 1. request parametresiyle LoginViewModel alındı ve ViewBag.userViewModel'a atanarak view içinde erişilebilir hale getirildi.
-        ViewBag.userViewModel = request;
-
-        // 2. CountryMenu'yu oluşturma
-        var countryMenu = new List<CountryMenu>
+        // Bu metot hem GET hem de POST isteklerini kabul eder.
+        // "HasUserName" adında bir Ajax doğrulama metodu olarak kullanılır.
+        [AcceptVerbs("GET", "POST")]
+        public IActionResult HasUserName([Bind(Prefix = "FormData.UserName")] string userName)
         {
-            new() { Text = "Türkiye", Value = 1 },
-            new() { Text = "Almanya", Value = 2 },
-            new() { Text = "Fransa", Value = 3 }
-        };
+            var names = new List<string>() { "ahmet", "mehmet", "hasan" };
 
+            // Kullanıcı adı veritabanında mevcutsa, mesaj döndürülür.
+            if (names.Contains(userName))
+            {
+                return Json("girmiş olduğunuz username veritabanında bulunmaktadır.");
+            }
 
-
-        var genderMenu = new List<GenderViewModel>
-        {
-            new() { Text = "Erkek", Value = 1,  },
-
-            new() { Text = "Kadın", Value = 2 }
-        };
-
-
-        request.Data.CountryMenu = new SelectList(countryMenu, "Value", "Text", 1);
-
-        request.Data.GenderMenu = genderMenu;
-
-
-
-
-        return View(request);
+            // Kullanıcı adı veritabanında yoksa, true döndürülür.
+            return Json(true);
+        }
     }
 }
